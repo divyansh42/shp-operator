@@ -40,19 +40,19 @@ jobs:
       - name: Update Content in shp-operator Release.yaml
         run: |
           cat "${{ env.SOURCE_FILE }}" > kodata/release.yaml
-          git add kodata/release.yaml
-          git commit -m "chore: update kodata/release.yaml from shipwright-io/build nightly"
-          git push origin "update-release"
+          # git add kodata/release.yaml
+          # git commit -m "chore: update kodata/release.yaml from shipwright-io/build nightly"
+          # git push origin "update-release"
 
-      # - name: Create Pull Request
-      #   uses: peter-evans/create-pull-request@v3
-      #   with:
-      #     token: ${{ secrets.GITHUB_TOKEN }}
-      #     commit-message: "chore: update kodata/release.yaml from shipwright-io/build nightly"
-      #     title: "Update kodata/release.yaml from shipwright-io/build nightly"
-      #     body: "This pull request updates kodata/release.yaml with the content from shipwright-io/build nightly."
-      #     branch: "update-release"
-      #     base: "main"
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: update kodata/release.yaml from shipwright-io/build nightly"
+          title: "Update kodata/release.yaml from shipwright-io/build nightly"
+          body: "This pull request updates kodata/release.yaml with the content from shipwright-io/build nightly."
+          branch: "update-release"
+          base: "main"
 
       # - name: Cleanup
       #   run: |
