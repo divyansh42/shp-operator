@@ -1,0 +1,58 @@
+name: Update Release
+
+on:
+  workflow_dispatch:
+  # schedule:
+  #   - cron: '0 0 * * *' # Run the workflow every day at midnight
+
+jobs:
+  update-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Fetch Source File Name from Latest.txt
+        id: fetch-source-file
+        run: |
+          SOURCE_FILE=$(curl -sL "https://github.com/shipwright-io/build/releases/download/nightly/latest.txt")
+          SOURCE_FILE="nightly-$SOURCE_FILE"
+          echo "SOURCE_FILE=$SOURCE_FILE" >> $GITHUB_ENV
+
+      - name: Save File Content
+        id: save-file-content
+        run: |
+          curl -sL "https://github.com/shipwright-io/build/releases/download/nightly/${{ env.SOURCE_FILE }}" -o ${{ env.SOURCE_FILE }}
+          FILE_CONTENT=$(cat ${{ env.SOURCE_FILE }})
+          echo "FILE_CONTENT=$FILE_CONTENT" >> $GITHUB_ENV
+
+      - name: Create Temporary Branch in shp-operator Repo
+        run: |
+          # git config user.name "${{ github.actor }}"
+          # git config user.email "${{ github.actor }}@users.noreply.github.com"
+          git fetch origin
+          git checkout -b "update-${{ env.SOURCE_FILE }}"
+
+
+      - name: Update Content in shp-operator Release.yaml
+        run: |
+          echo "$FILE_CONTENT" > kodata/release.yaml
+          git add kodata/release.yaml
+          git commit -m "chore: update kodata/release.yaml from shipwright-io/build nightly"
+          git push origin "update-${{ env.SOURCE_FILE }}"
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: update kodata/release.yaml from shipwright-io/build nightly"
+          title: "Update kodata/release.yaml from shipwright-io/build nightly"
+          body: "This pull request updates kodata/release.yaml with the content from shipwright-io/build nightly."
+          branch: "update-${{ env.SOURCE_FILE }}"
+
+      # - name: Cleanup
+      #   run: |
+      #     git checkout main
+      #     git branch -D "update-${{ env.SOURCE_FILE }}"
+      #     rm ${{ env.SOURCE_FILE }}
