@@ -28,18 +28,19 @@ jobs:
           # FILE_CONTENT=$(cat ${{ env.SOURCE_FILE }})
           # echo "FILE_CONTENT=$FILE_CONTENT" >> $GITHUB_ENV
 
-      - name: Create Temporary Branch in shp-operator Repo
-        run: |
-          git config user.name "${{ github.actor }}"
-          git config user.email "${{ github.actor }}@users.noreply.github.com"
-          git fetch origin
-          git checkout main
-          git checkout -b "update-release"
+      # - name: Create Temporary Branch in shp-operator Repo
+      #   run: |
+      #     git config user.name "${{ github.actor }}"
+      #     git config user.email "${{ github.actor }}@users.noreply.github.com"
+      #     git fetch origin
+      #     git checkout main
+      #     git checkout -b "update-release"
 
 
       - name: Update Content in shp-operator Release.yaml
         run: |
           cat "${{ env.SOURCE_FILE }}" > kodata/release.yaml
+          rm "${{ env.SOURCE_FILE }}"
           # git add kodata/release.yaml
           # git commit -m "chore: update kodata/release.yaml from shipwright-io/build nightly"
           # git push origin "update-release"
