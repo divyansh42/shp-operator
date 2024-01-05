@@ -51,9 +51,10 @@ jobs:
           title: "Update kodata/release.yaml from shipwright-io/build nightly"
           body: "This pull request updates kodata/release.yaml with the content from shipwright-io/build nightly."
           branch: "update-${{ env.SOURCE_FILE }}"
+          base: "main"
 
-      # - name: Cleanup
-      #   run: |
-      #     git checkout main
-      #     git branch -D "update-${{ env.SOURCE_FILE }}"
-      #     rm ${{ env.SOURCE_FILE }}
+      - name: Cleanup
+        run: |
+          git checkout main
+          git branch -D "update-${{ env.SOURCE_FILE }}"
+          rm ${{ env.SOURCE_FILE }}
