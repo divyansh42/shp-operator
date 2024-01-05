@@ -18,15 +18,15 @@ jobs:
         id: fetch-source-file
         run: |
           SOURCE_FILE=$(curl -sL "https://github.com/shipwright-io/build/releases/download/nightly/latest.txt")
-          SOURCE_FILE="nightly-$SOURCE_FILE"
+          SOURCE_FILE="nightly-$SOURCE_FILE.yaml"
           echo "SOURCE_FILE=$SOURCE_FILE" >> $GITHUB_ENV
 
       - name: Save File Content
         id: save-file-content
         run: |
           curl -sL "https://github.com/shipwright-io/build/releases/download/nightly/${{ env.SOURCE_FILE }}" -o ${{ env.SOURCE_FILE }}
-          FILE_CONTENT=$(cat ${{ env.SOURCE_FILE }})
-          echo "FILE_CONTENT=$FILE_CONTENT" >> $GITHUB_ENV
+          # FILE_CONTENT=$(cat ${{ env.SOURCE_FILE }})
+          # echo "FILE_CONTENT=$FILE_CONTENT" >> $GITHUB_ENV
 
       - name: Create Temporary Branch in shp-operator Repo
         run: |
@@ -38,7 +38,7 @@ jobs:
 
       - name: Update Content in shp-operator Release.yaml
         run: |
-          echo "$FILE_CONTENT" > kodata/release.yaml
+          echo "$SOURCE_FILE" > kodata/release.yaml
           git add kodata/release.yaml
           git commit -m "chore: update kodata/release.yaml from shipwright-io/build nightly"
           git push origin "update-${{ env.SOURCE_FILE }}"
@@ -57,4 +57,4 @@ jobs:
         run: |
           git checkout main
           git branch -D "update-${{ env.SOURCE_FILE }}"
-          rm ${{ env.SOURCE_FILE }}
+          # rm ${{ env.SOURCE_FILE }}
